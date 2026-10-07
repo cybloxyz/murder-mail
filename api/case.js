@@ -1,4 +1,5 @@
-import { verifyToken, fileNo } from './_lib.js';
+import { verifyToken, fileNo, esc } from './_lib.js';
+import { dbReady, upsertPlayer, getProgress, recordTry } from './_db.js';
 
 // Kunci jawaban hanya ada di server (culprit, motive, cleared, epilog); tidak pernah dikirim saat GET.
 const CASE = {
@@ -63,7 +64,38 @@ const SOLUTION = {
   epilog: 'Pogo ditangkap masih memakai sepatu raksasanya. "Aku cuma ingin dia berhenti tertawa," katanya. Di meja Tacoz ada email terjadwal: "Aku Tacoz. Jangan lupakan namaku. P.S. Pogo, leluconku memang tidak lucu. Tapi racunmu juga tidak kreatif."'
 };
 
-export default function handler(req, res) {
+async function mail(payload) {
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: 'murdermail@nfnaa.dev', ...payload })
+  });
+  if (!r.ok) throw new Error(`Resend ${r.status}: ${await r.text()}`);
+}
+
+// Dipanggil sekali saat Kasus #01 pertama kali dijawab benar.
+async function notifySolved(req, me, token) {
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  const box = 'font-family:monospace;background:#f4eee1;color:#2c241d;padding:12px;border:2px solid #990000';
+  await mail({
+    to: [me.e],
+    subject: '[CAUTION] Kasus #01 ditutup',
+    html: `<div style="${box}"><h2 style="color:#990000">[MASTER MEMORY]</h2>
+<p>Selamat, Detektif <b>${esc(me.n)}</b>. Pogo sudah dibawa pergi, masih memakai sepatu raksasanya.</p>
+<p>Tapi seseorang membaca arsipmu sampai habis. Aku tidak akan bilang siapa.</p>
+<p>Kasus berikutnya akan datang lewat surat. Jangan lupakan namaku.</p><p>Tacoz</p></div>`
+  });
+  if (process.env.OWNER_EMAIL) {
+    await mail({
+      to: [process.env.OWNER_EMAIL],
+      subject: `[KASUS 1 SELESAI] ${me.n}`,
+      html: `<div style="${box}"><p>Pemain: <b>${esc(me.n)}</b> &lt;${esc(me.e)}&gt;</p>
+<p>Tautan Kasus #02 (kirim ke pemain ini):<br>https://${host}/case2.html?token=${token}</p></div>`
+    });
+  }
+}
+
+export default async function handler(req, res) {
   if (!process.env.TOKEN_SECRET) return res.status(500).json({ ok: false, message: 'TOKEN_SECRET belum diset.' });
 
   const src = req.method === 'POST' ? req.body || {} : req.query || {};
@@ -84,6 +116,17 @@ export default function handler(req, res) {
 
   const { culprit, motive } = src;
   if (culprit === SOLUTION.culprit && motive === SOLUTION.motive) {
+    try {
+      if (dbReady()) {
+        await upsertPlayer(me.e, me.n);
+        if (!(await getProgress(me.e, 1)).solved) {
+          await notifySolved(req, me, src.token); // gagal kirim = belum dicatat, dicoba lagi saat menuduh ulang
+          await recordTry(me.e, 1, true);
+        }
+      }
+    } catch (err) {
+      console.error('case1 solve error:', err);
+    }
     return res.status(200).json({ ok: true, solved: true, title: 'KASUS DITUTUP', text: SOLUTION.epilog });
   }
   if (culprit === SOLUTION.culprit) {

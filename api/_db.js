@@ -45,3 +45,6 @@ export const claimInbound = async (id, email) =>
 
 export const recentInbound = async (email, hours = 24) =>
   (await q(`inbound_log?email=eq.${e(mail(email))}&created_at=gte.${e(new Date(Date.now() - hours * 3600e3).toISOString())}&select=email_id`)).length;
+
+export const listSolved = async (c) =>
+  (await q(`progress?case_no=eq.${c}&solved=eq.true&select=email,players(name)`)).map((r) => ({ email: r.email, name: r.players?.name || r.email }));
