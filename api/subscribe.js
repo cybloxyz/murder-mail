@@ -1,25 +1,12 @@
-import 'dotenv/config';
-import express from 'express';
 import { Resend } from 'resend';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const PORT = 3000;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-app.set('trust proxy', true);
-app.use(cors());
-app.use(express.json());
+export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ success: false, message: "Method tidak diizinkan!" });
+    }
 
-app.use(express.static(__dirname));
-
-app.post('/api/subscribe', async (req, res) => {
     const { name, email } = req.body;
 
     if (!email || !name) {
@@ -27,18 +14,16 @@ app.post('/api/subscribe', async (req, res) => {
     }
 
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    // Buat token unik sederhana berdasarkan timestamp dan random string
     const token = 'CASES-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     
-    // Ambil domain deployment Vercel secara otomatis
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const loginLink = `${protocol}://${host}/dashboard.html?token=${token}`;
 
     try {
-        const cleanIp = clientIp.includes('::1') ? '' : clientIp;
-        
+        const cleanIp = clientIp && clientIp.includes('::1') ? '' : clientIp;
         let locationInfo = "Lokal / Development";
+        
         if (cleanIp) {
             const geoRes = await fetch(`http://ip-api.com/json/${cleanIp}`);
             const geoData = await geoRes.json();
@@ -63,6 +48,8 @@ app.post('/api/subscribe', async (req, res) => {
                     <p>Halo <b>${name}</b>,</p>
                     <p>Aku Tacoz.</p>
                     <p>Jangan lupakan namaku.</p>
+                    <p>Token aksesmu: <b>${token}</b></p>
+                    <a href="${loginLink}">Buka Dashboard</a>
                     <hr style="border: 1px dashed #d0c2b0; margin: 12px 0;">
                     <p style="font-size: 11px; color: #6b5b52;">PROJECT: REDACTED // Murder Mailer</p>
                 </div>
@@ -70,13 +57,9 @@ app.post('/api/subscribe', async (req, res) => {
         });
 
         console.log(`[BERHASIL] Berkas terkirim ke: ${email} (Nama: ${name})`, data);
-        res.status(200).json({ success: true, message: "Berkas berhasil dikirim!" });
+        return res.status(200).json({ success: true, message: "Berkas berhasil dikirim!" });
     } catch (error) {
         console.error("Gagal mengirim email:", error);
-        res.status(500).json({ success: false, message: "Gagal terhubung ke server email." });
+        return res.status(500).json({ success: false, message: "Gagal terhubung ke server email." });
     }
-});
-
-app.listen(PORT, () => {
-    console.log(`Server game berjalan di http://localhost:${PORT}`);
-});
+}
