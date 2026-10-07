@@ -54,7 +54,7 @@ app.post('/api/subscribe', async (req, res) => {
 
     try {
         const data = await resend.emails.send({
-            from: 'murder@murdermail.nfnaa.dev',
+            from: 'murdermail@nfnaa.dev',
             to: [email],
             subject: '[CAUTION]',
             html: `
