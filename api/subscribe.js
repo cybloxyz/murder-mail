@@ -1,7 +1,3 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const escapeHtml = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -16,6 +12,11 @@ export default async function handler(req, res) {
 
   if (!email || !name) {
     return res.status(400).json({ success: false, message: "Nama dan alamat email wajib diisi!" });
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    console.error("RESEND_API_KEY belum diset di Environment Variables");
+    return res.status(500).json({ success: false, message: "Server belum dikonfigurasi (API key kosong)." });
   }
 
   const forwarded = req.headers['x-forwarded-for'];
@@ -41,30 +42,42 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'murdermail@nfnaa.dev',
-      to: [email],
-      subject: '[CAUTION]',
-      html: `
-        <div style="font-family: monospace; font-size: 1rem; background-color: #f4eee1; color: #2c241d; padding: 12px; border: 2px solid #990000;">
-          <h2 style="color: #990000; text-transform: uppercase;">[MASTER MEMORY]</h2>
-          <p>Halo <b>${escapeHtml(name)}</b>,</p>
-          <p>Aku Tacoz.</p>
-          <p>Jangan lupakan namaku.</p>
-          <p>Token aksesmu: <b>${token}</b></p>
-          <a href="${loginLink}">Buka Dashboard</a>
-          <hr style="border: 1px dashed #d0c2b0; margin: 12px 0;">
-          <p style="font-size: 11px; color: #6b5b52;">PROJECT: REDACTED // Murder Mailer</p>
-        </div>
-      `
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'murdermail@nfnaa.dev',
+        to: [email],
+        subject: '[CAUTION]',
+        html: `
+          <div style="font-family: monospace; font-size: 1rem; background-color: #f4eee1; color: #2c241d; padding: 12px; border: 2px solid #990000;">
+            <h2 style="color: #990000; text-transform: uppercase;">[MASTER MEMORY]</h2>
+            <p>Halo <b>${escapeHtml(name)}</b>,</p>
+            <p>Aku Tacoz.</p>
+            <p>Jangan lupakan namaku.</p>
+            <p>Token aksesmu: <b>${token}</b></p>
+            <a href="${loginLink}">Buka Dashboard</a>
+            <hr style="border: 1px dashed #d0c2b0; margin: 12px 0;">
+            <p style="font-size: 11px; color: #6b5b52;">PROJECT: REDACTED // Murder Mailer</p>
+          </div>
+        `
+      })
     });
 
-    if (error) {
-      console.error("Resend menolak:", error);
-      return res.status(502).json({ success: false, message: "Email gagal dikirim: " + error.message });
+    const result = await resp.json().catch(() => ({}));
+
+    if (!resp.ok) {
+      console.error("Resend menolak:", resp.status, result);
+      return res.status(502).json({
+        success: false,
+        message: "Email gagal dikirim: " + (result.message || resp.status)
+      });
     }
 
-    console.log(`[BERHASIL] Berkas terkirim ke: ${email} (Nama: ${name})`, data);
+    console.log(`[BERHASIL] Berkas terkirim ke: ${email} (Nama: ${name})`, result);
     return res.status(200).json({ success: true, message: "Berkas berhasil dikirim!" });
   } catch (err) {
     console.error("Gagal mengirim email:", err);
