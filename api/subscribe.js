@@ -27,6 +27,13 @@ app.post('/api/subscribe', async (req, res) => {
     }
 
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    // Buat token unik sederhana berdasarkan timestamp dan random string
+    const token = 'CASES-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    // Ambil domain deployment Vercel secara otomatis
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const loginLink = `${protocol}://${host}/dashboard.html?token=${token}`;
 
     try {
         const cleanIp = clientIp.includes('::1') ? '' : clientIp;
