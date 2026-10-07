@@ -47,16 +47,16 @@ app.post('/api/subscribe', async (req, res) => {
 
     try {
         const data = await resend.emails.send({
-            from: 'murder@nfnaa.dev',
+            from: 'murder@murdermail.nfnaa.dev',
             to: [email],
-            subject: '[CAUTION] ',
+            subject: '[CAUTION]',
             html: `
-                <div style="font-family: monospace; background-color: #f4eee1; color: #2c241d; padding: 20px; border: 2px solid #990000;">
-                    <h2 style="color: #990000; text-transform: uppercase;">[CLASSIFIED DOSSIER]</h2>
+                <div style="font-family: monospace; font-size: 1rem; background-color: #f4eee1; color: #2c241d; padding: 12px; border: 2px solid #990000;">
+                    <h2 style="color: #990000; text-transform: uppercase;">[MASTER MEMORY]</h2>
                     <p>Halo <b>${name}</b>,</p>
                     <p>Aku Tacoz.</p>
                     <p>Jangan lupakan namaku.</p>
-                    <hr style="border: 1px dashed #d0c2b0; margin: 20px 0;">
+                    <hr style="border: 1px dashed #d0c2b0; margin: 12px 0;">
                     <p style="font-size: 11px; color: #6b5b52;">PROJECT: REDACTED // Murder Mailer</p>
                 </div>
             `
