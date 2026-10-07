@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT: REDACTED // Murder Mystery Email Game</title>
+    <style>
+        :root {
+            --paper-bg: #f4eee1;
+            --paper-card: #eaddcf;
+            --paper-text: #2c241d;
+            --paper-muted: #6b5b52;
+            --blood-red: #990000;
+            --blood-hover: #cc0000;
+            --sun-yellow: #d4a373;
+            --border-color: #d0c2b0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Minecraft', Courier, monospace;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--paper-bg);
+            color: var(--paper-text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* PIXEL-ART BLOOD SPLATTERS (Murni Solid & Tajam di Setiap Sudut) */
+        .blood-splatter {
+            position: fixed;
+            width: 200px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .blood-tl {
+            top: 0;
+            left: 0;
+            transform: rotate(180deg);
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: auto;
+        }
+
+        .blood-tl:hover {
+            opacity: 0.5;
+        }
+
+        .blood-tr {
+            top: 0;
+            right: 0;
+            transform: scaleX(-1) rotate(180deg);
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: auto;
+        }
+
+        .blood-tr:hover {
+            opacity: 0.5;
+        }
+
+        .blood-bl {
+            bottom: 0;
+            left: 0;
+            transform: scaleY(-1) rotate(180deg);
+        }
+
+        .blood-br {
+            bottom: 0;
+            right: 0;
+            transform: scale(-1) rotate(180deg);
+        }
+
+        /* NAVBAR */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(244, 238, 225, 0.95);
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-brand {
+            color: var(--blood-red);
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-size: 0.95rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--paper-text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--blood-red);
+        }
+
+        /* SCROLL WRAPPER */
+        .scroll-wrapper {
+            height: 100vh;
+            height: 100dvh;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory;
+        }
+
+        .scroll-section {
+            scroll-snap-stop: always;
+            height: 100vh;
+            height: 100dvh;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 20px 50px 20px;
+            border-bottom: 2px dashed var(--border-color);
+            max-width: 950px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* SECTION 1: HERO */
+        .hero-content {
+            text-align: center;
+        }
+
+        .rowing {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .hero-tag {
+            color: var(--paper-bg);
+            background: var(--blood-red);
+            padding: 4px 10px;
+            display: inline-block;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            color: var(--paper-text);
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-title span {
+            background: rgba(153, 0, 0, 0.1);
+            padding: 0 5px;
+        }
+
+        .hero-desc {
+            font-size: 0.95rem;
+            max-width: 550px;
+            margin: 0 auto 30px auto;
+            color: var(--paper-muted);
+            line-height: 1.6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: transparent;
+            border: 2px solid var(--blood-red);
+            color: var(--blood-red);
+            padding: 12px 25px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--blood-red);
+            color: var(--paper-bg);
+            box-shadow: 0 0 15px rgba(153, 0, 0, 0.3);
+        }
+
+        .btn-solid {
+            background: var(--blood-red);
+            color: var(--paper-bg);
+        }
+
+        .btn-solid:hover {
+            background: var(--blood-hover);
+            color: #fff;
+        }
+
+        .murder {
+            width: 400px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .murder-p {
+            width: 400px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            transform: scaleX(-1);
+        }
+
+        /* SECTION 2: TERSANGKA */
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            color: var(--blood-red);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .card {
+            background: var(--paper-card);
+            padding: 20px;
+            transition: all 0.3s;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            color: var(--blood-red);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            border-bottom: 1px dotted var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        .card p {
+            font-size: 0.8rem;
+            color: var(--paper-muted);
+            line-height: 1.5;
+        }
+
+        /* SECTION 3: FORM PENDAFTARAN */
+        .form-container {
+            width: 100%;
+            max-width: 480px;
+            border: 2px solid var(--blood-red);
+            background: var(--paper-card);
+            padding: 30px;
+            box-shadow: 6px 6px 0px rgba(153, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .form-container::before {
+            content: "TOP SECRET // OFFICIAL FILE";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--blood-red);
+            color: var(--paper-bg);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: var(--blood-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        input[type="email"],
+        input[type="text"] {
+            background: var(--paper-bg);
+            border: 1px solid var(--border-color);
+            color: var(--paper-text);
+            padding: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus,
+        input[type="text"]:focus {
+            border-color: var(--blood-red);
+            box-shadow: 0 0 8px rgba(153, 0, 0, 0.2);
+        }
+
+        #status-message {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .success { color: var(--blood-red); }
+        .error { color: #d90429; }
+
+        .sprite-animate {
+            width: 820px; 
+            height: 400px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            will-change: transform;
+            transform: translateZ(0);          
+            animation: gantiGambar 1s step-start infinite;
+        }
+
+        @keyframes gantiGambar {
+            0% { background-image: url('assets/animate/1.png'); }
+            18.66% { background-image: url('assets/animate/2.png'); }
+            33.33% { background-image: url('assets/animate/3.png'); }
+            50% { background-image: url('assets/animate/4.png'); }
+            66.66% { background-image: url('assets/animate/5.png'); }
+            83.33% { background-image: url('assets/animate/6.png'); }
+            100% { background-image: url('assets/animate/1.png'); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Aset Cipratan Darah Pixel-Art di Keempat Sudut Layar -->
+    <img src="assets/blood.png" alt="" class="blood-splatter blood-tl">
+    <img src="assets/blood.png" alt="" class="blood-splatter blood-tr">
+    <img src="assets/blood.png" alt="" class="blood-splatter blood-bl">
+    <img src="assets/blood.png" alt="" class="blood-splatter blood-br">
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-brand">// MURDER_MAIL</div>
+        <div class="nav-links">
+            <a href="#hero">Beranda</a>
+            <a href="#tersangka">Tersangka</a>
+            <a href="#daftar">Mulai Main</a>
+        </div>
+    </nav>
+
+    <article class="scroll-wrapper">
+    
+        <!-- SECTION 1: HERO -->
+        <section id="hero" class="scroll-section">
+            <div class="rowing">
+                <div class="hero-content">
+                    <div class="hero-tag">[ CLASSIFIED DOSSIER ]</div>
+                    <h1 class="hero-title">Committed to <span style="color: #990000;">Kill</span> your <span style="color: #e7b729;">Sunshine</span></h1>
+                    <p class="hero-desc">Game investigasi pembunuhan asinkron. Dapatkan transkrip rahasia, analisis bukti forensik, dan cari tahu siapa pembunuhnya secara berkala.</p>
+                    <div class="btn-group">
+                        <a href="#daftar" class="btn btn-solid">Gabung Penyelidikan</a>
+                        <a href="#tersangka" class="btn">Lihat Tersangka</a>
+                    </div>
+                </div>
+                <div class="sprite-animate" alt="murder animation"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TERSANGKA -->
+        <section id="tersangka" class="scroll-section">
+            <div class="rowing">
+                <img src="assets/animate/1.png" alt="bloodyhell" class="murder">
+                <div class="section-header">
+                    <h2>ARSIP PENCARIAN TERSANGKA</h2>
+                    <p style="color: var(--paper-muted); font-size: 0.85rem;">Siapa yang akan menemukan kamu lebih dulu di ruang arsip ini?</p>
+                </div>
+                <div class="grid-cards">
+                    <div class="card">
+                        <h3>01 // the "C"</h3>
+                        <p>I am comitted to crime and consistent in it. Criminal Consistency is my initial.</p>
+                    </div>
+                    <div class="card">
+                        <h3>02 // Ahli Waris</h3>
+                        <p>Mendapatkan porsi terbesar dari surat warisan baru. Alibi di luar kota terbukti penuh kejanggalan waktu.</p>
+                    </div>
+                    <div class="card">
+                        <h3>03 // Mitra Bisnis</h3>
+                        <p>Terlibat perselisihan hukum sengit bernilai miliaran rupiah dengan korban seminggu sebelum kematiannya.</p>
+                    </div>
+                    <div class="card">
+                        <h3>04 // Sang Sekretaris</h3>
+                        <p>Terlihat di dekat ruang kerja korban tepat 30 menit sebelum insiden terjadi. Memiliki akses ke brankas rahasia.</p>
+                    </div>
+                    <div class="card">
+                        <h3>05 // Saksi Misterius</h3>
+                        <p>Memberikan kesaksian palsu di kantor polisi pada malam kejadian sebelum akhirnya menghilang.</p>
+                    </div>
+                    <div class="card">
+                        <h3>06 // Sang Mantan</h3>
+                        <p>Memiliki catatan konflik personal dan pesan ancaman terbuka yang ditemukan di laci meja korban.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: FORM PENDAFTARAN -->
+        <section id="daftar" class="scroll-section">
+            <div class="rowing">
+                <div class="form-container">
+                    <div class="hero-tag" style="background: var(--sun-yellow); color: var(--paper-text);">Inisiasi Kasus Baru</div>
+                    <h2 style="font-size: 1.2rem; color: var(--paper-text); text-transform: uppercase; margin-top: 5px;">Kirim Berkas ke Emailmu</h2>
+                    
+                    <form id="investigation-form">
+                        <div>
+                            <label for="name">Nama:</label>
+                            <input type="text" id="name" name="name" placeholder="Nama / Nama Samaran" required>
+                        </div>
+                        <div>
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" placeholder="detektif@domain.com" required>
+                        </div>
+                        <button type="submit" class="btn btn-solid" id="submit-btn" style="width: 100%;">Kirim Berkas</button>
+                    </form>
+
+                    <div id="status-message"></div>
+                </div>
+                <img src="assets/animate/4.png" alt="" class="murder-p">
+            </div>
+        </section>
+
+    </article>
+
+    <script>
+        const form = document.getElementById('investigation-form');
+        const statusMessage = document.getElementById('status-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('name').value;
+            const emailInput = document.getElementById('email').value;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Mengenkripsi Berkas...";
+            statusMessage.textContent = "";
+
+            try {
+                const response = await fetch('http://localhost:3000/api/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nameInput, email: emailInput })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusMessage.className = "success";
+                    statusMessage.textContent = `[OK] Berhasil, Detektif ${nameInput}! Berkas kasus dikirim ke ${emailInput}.`;
+                    form.reset();
+                } else {
+                    throw new Error(result.message || "Gagal memproses data.");
+                }
+            } catch (err) {
+                statusMessage.className = "error";
+                statusMessage.textContent = "[GAGAL] Gagal terhubung ke server backend.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Kirim Berkas Kasus Pertama";
+            }
+        });
+    </script>
+
+</body>
+</html>
