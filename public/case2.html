@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kasus #02 // Murder Mail</title>
+<style>
+    :root{--bg:#f4eee1;--card:#eaddcf;--ink:#2c241d;--mute:#6b5b52;--red:#990000;--line:#d0c2b0;--sun:#d4a373}
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Minecraft',Courier,monospace}
+
+    body{background:var(--bg);color:var(--ink);padding-bottom:60px}
+
+    .bunting{height:10px;background:repeating-linear-gradient(90deg,var(--red) 0 24px,var(--sun) 24px 48px,var(--ink) 48px 72px)}
+
+    .wrap{max-width:760px;margin:0 auto;padding:18px 16px}
+
+    .top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--mute);margin-bottom:14px}.top b{color:var(--red)}
+
+    h1{color:var(--red);font-size:clamp(1.3rem,4vw,2rem);line-height:1.2}
+
+    .tag{color:var(--mute);margin:6px 0 16px;font-size:.85rem}
+
+    nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+
+    nav button,.btn{background:transparent;border:2px solid var(--red);color:var(--red);padding:8px 14px;font-weight:bold;font-size:.8rem;cursor:pointer}
+
+    nav button.on,.btn:hover:not(:disabled){background:var(--red);color:var(--bg)}
+
+    .btn:disabled{opacity:.5;cursor:default}
+
+    button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+    .card{background:var(--card);border:1px dashed var(--line);padding:14px;margin-bottom:12px;font-size:.85rem;line-height:1.6}
+
+    .card h3{color:var(--red);font-size:.95rem;margin-bottom:6px}
+
+    .k{font-size:.7rem;background:var(--red);color:var(--bg);padding:1px 6px;margin-right:6px}
+
+    p{margin-bottom:10px;line-height:1.6;font-size:.9rem}ul,ol{margin:0 0 10px 18px;line-height:1.7;font-size:.85rem}
+
+    select,input{width:100%;background:var(--bg);border:1px solid var(--line);padding:10px;margin:4px 0 12px;color:var(--ink)}
+
+    label{font-size:.75rem;color:var(--red);font-weight:bold}
+
+    .msg{padding:12px;border:2px solid var(--red);margin-top:12px;font-size:.85rem;line-height:1.6;background:var(--card)}
+
+    .panel{display:none}.panel.on{display:block}
+</style>
+</head>
+    <body>
+    <div class="bunting"></div>
+    <div class="wrap" id="app"><p id="boot">Memverifikasi token akses...</p></div>
+    <script>
+        const $ = (s) => document.querySelector(s);
+        const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const token = new URLSearchParams(location.search).get('token');
+        const MAX = 3;
+        let C, EV = [], S = { tries: 0, solved: null };
+        const post = (b) => fetch('/api/case2', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, ...b }) }).then((r) => r.json());
+        const save = () => {};
+
+        async function init() {
+        if (!token) { $('#boot').textContent = '[GAGAL] Akses ditolak. Token tidak ditemukan.'; return; }
+        try {
+            const d = await (await fetch('/api/case2?token=' + encodeURIComponent(token))).json();
+            if (!d.ok) throw new Error(d.message);
+            C = d; EV = d.evidence || []; S = { tries: d.tries, solved: d.solved };
+            render();
+        } catch (e) { $('#boot').textContent = '[GAGAL] ' + (e.message || 'Arsip tidak bisa dimuat.'); }
+        }
+
+        const opts = (a) => a.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('');
+        const files = () => EV.map((e) => `<div class="card"><h3><span class="k">${esc(e.tag)}</span>${esc(e.title)}</h3>${esc(e.body)}</div>`).join('') || '<p>Belum ada berkas. Balas surat Bunda Lila.</p>';
+
+        function render() {
+        const c = C.case;
+        $('#app').innerHTML = `
+        <div class="top"><span>Detektif <b>${esc(C.name)}</b></span><span>Berkas <b>${esc(C.file)}</b></span></div>
+        <h1>Kasus #02: ${esc(c.title)}</h1><div class="tag">${esc(c.tagline)}</div>
+        <nav>${['surat', 'berkas', 'tersangka', 'vonis'].map((t, i) => `<button data-t="${t}" class="${i ? '' : 'on'}">${t}</button>`).join('')}</nav>
+
+        <section class="panel on" id="p-surat">
+            ${c.intro.map((p) => `<p>${esc(p)}</p>`).join('')}
+            <div class="card"><h3>Cara bermain</h3><ol>
+            <li>Tekan tombol di bawah. Bunda Lila mengirim surat ke emailmu.</li>
+            <li>Balas surat itu dengan satu pertanyaan spesifik. Satu surat, satu berkas.</li>
+            <li>Salin kode berkas dari balasannya, lalu arsipkan di tab Berkas.</li>
+            <li>Balas dari alamat email yang sama dengan yang kamu daftarkan.</li></ol>
+            <button class="btn" id="start">Kirim surat pertama</button><div id="startmsg"></div></div>
+            <div class="card"><h3>Lini masa</h3><ul>${c.timeline.map(([t, x]) => `<li><b>${esc(t)}</b> ${esc(x)}</li>`).join('')}</ul></div>
+        </section>
+
+        <section class="panel" id="p-berkas">
+            <div class="card"><label for="code">Kode berkas dari email</label><input id="code" placeholder="E1-XXXXXXXX" autocomplete="off">
+            <button class="btn" id="add">Arsipkan</button><div id="addmsg"></div></div>
+            <p><b id="count">${EV.length}</b> / ${C.total} berkas terkumpul</p><div id="files">${files()}</div>
+        </section>
+
+        <section class="panel" id="p-tersangka">${c.suspects.map((s) => `<div class="card"><h3>${esc(s.name)} <small>(${esc(s.role)})</small></h3>${esc(s.statement)}</div>`).join('')}</section>
+
+        <section class="panel" id="p-vonis"><div class="card">
+            <label for="culprit">Pelaku lapangan</label><select id="culprit"><option value="">pilih</option>${opts(c.suspects.map((s) => [s.id, `${s.name} (${s.role})`]))}</select>
+            <label for="method">Cara</label><select id="method"><option value="">pilih</option>${opts(c.methods)}</select>
+            <label for="sentence">Vonis</label><select id="sentence"><option value="">pilih</option>${opts(c.sentences)}</select>
+            <button class="btn" id="go">Jatuhkan vonis</button> <small id="left"></small></div>
+            <div id="res" class="msg" ${S.solved ? '' : 'hidden'}>${S.solved ? `<b>BERKAS DITUTUP SEBAGIAN</b><br>${esc(S.solved)}` : ''}</div></section>`;
+        tries();
+        }
+
+        function tries() {
+        const left = MAX - S.tries;
+        $('#left').textContent = S.solved ? '' : `Sisa ${Math.max(left, 0)} vonis`;
+        $('#go').disabled = !!S.solved || left <= 0;
+        }
+
+        async function add() {
+        const v = $('#code').value.trim().toUpperCase(), m = $('#addmsg');
+        if (!v) return;
+        const d = await post({ action: 'file', code: v });
+        if (d.evidence && d.evidence.length > EV.length) {
+            EV = d.evidence;
+            $('#files').innerHTML = files(); $('#count').textContent = EV.length; $('#code').value = ''; m.textContent = 'Berkas diarsipkan.';
+        } else m.textContent = d.message || 'Kode ini sudah diarsipkan.';
+        }
+
+        async function judge() {
+        const box = $('#res'), culprit = $('#culprit').value, method = $('#method').value, sentence = $('#sentence').value;
+        box.hidden = false;
+        if (!culprit || !method || !sentence) { box.textContent = 'Lengkapi pelaku, cara, dan vonis.'; return; }
+        try {
+            const d = await post({ action: 'verdict', culprit, method, sentence });
+            box.innerHTML = `<b>${esc(d.title || 'GAGAL')}</b><br>${esc(d.text || d.message || '')}`;
+            if (d.counted) S.tries++;
+            if (d.solved) S.solved = d.text;
+            save(); tries();
+        } catch { box.textContent = '[GAGAL] Server tidak merespons.'; }
+        }
+
+        $('#app').addEventListener('click', async (e) => {
+        const b = e.target.closest('button'); if (!b) return;
+        if (b.dataset.t) {
+            document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
+            document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('on', p.id === 'p-' + b.dataset.t));
+        } else if (b.id === 'start') {
+            b.disabled = true; const d = await post({ action: 'start' }).catch(() => ({ message: 'Gagal terhubung.' }));
+            $('#startmsg').textContent = d.message; b.disabled = false;
+        } else if (b.id === 'add') add();
+        else if (b.id === 'go') judge();
+        });
+        init();
+    </script>
+    </body>
+</html>

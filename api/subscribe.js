@@ -1,4 +1,5 @@
 import { signToken, fileNo, esc } from './_lib.js';
+import { dbReady, upsertPlayer } from './_db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ success: false, message: 'Nama dan alamat email wajib diisi dengan benar!' });
   }
-  if (!process.env.RESEND_API_KEY || !process.env.TOKEN_SECRET) {
+  if (!process.env.RESEND_API_KEY || !process.env.TOKEN_SECRET || !dbReady()) {
     console.error('RESEND_API_KEY atau TOKEN_SECRET belum diset');
     return res.status(500).json({ success: false, message: 'Server belum dikonfigurasi.' });
   }
@@ -24,6 +25,13 @@ export default async function handler(req, res) {
     }
   } catch {
     console.log(`[PELACAKAN IP] Gagal melacak lokasi IP: ${ip}`);
+  }
+
+  try {
+    await upsertPlayer(email, name);
+  } catch (err) {
+    console.error('Supabase error:', err);
+    return res.status(500).json({ success: false, message: 'Database bermasalah. Coba lagi sebentar.' });
   }
 
   const token = signToken(name, email);
