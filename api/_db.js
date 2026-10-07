@@ -1,23 +1,26 @@
-// Supabase lewat REST (PostgREST), tanpa paket npm. Hanya dipakai dari server.
 const KEY = () => process.env.SUPABASE_SERVICE_KEY;
 const e = encodeURIComponent;
 const mail = (s) => String(s).toLowerCase();
 
 async function q(path, { method = 'GET', body, prefer } = {}) {
   const k = KEY();
+  if (!k) throw new Error("Supabase API Key tidak ditemukan di environment variable.");
+
   const r = await fetch(`${process.env.SUPABASE_URL}/rest/v1/${path}`, {
     method,
     headers: {
-      apikey: k,
-      ...(k.startsWith('eyJ') && { Authorization: `Bearer ${k}` }),
+      'apikey': k,
+      'Authorization': `Bearer ${k}`, 
       'Content-Type': 'application/json',
-      ...(prefer && { Prefer: prefer })
+      ...(prefer && { 'Prefer': prefer })
     },
     body: body && JSON.stringify(body)
   });
+
   if (!r.ok) throw new Error(`Supabase ${r.status}: ${await r.text()}`);
+  
   const t = await r.text();
-  return t ? JSON.parse(t) : null;
+  return t ? JSON.parse(t) : []; 
 }
 
 export const dbReady = () => !!(process.env.SUPABASE_URL && KEY());
