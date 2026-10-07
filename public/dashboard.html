@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminal Arsip - Murder Mystery</title>
+    <style>
+        body { background: #1a1614; color: #f4eee1; font-family: monospace; padding: 40px; }
+        .box { border: 2px dashed #990000; padding: 20px; max-width: 600px; margin: auto; background: #241f1c; }
+        h1 { color: #990000; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>[TERMINAL AMAN]</h1>
+        <p id="status">Memverifikasi token akses...</p>
+        <div id="content" style="display:none;">
+            <p><b>Akses Diberikan.</b> Selamat datang di Arsip Kasus #01.</p>
+            <p>Petunjuk: Korban terakhir terlihat di dekat lorong laboratorium pada pukul 23:45...</p>
+        </div>
+    </div>
+
+    <script>
+        // Membaca token dari URL (contoh: /dashboard.html?token=CASES-XYZ)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            document.getElementById('status').innerText = "Token terdeteksi: " + token;
+            // Di sini kamu bisa memvalidasi token atau langsung membuka isi game
+            setTimeout(() => {
+                document.getElementById('status').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            }, 1000);
+        } else {
+            document.getElementById('status').innerText = "[GAGAL] Akses ditolak. Token tidak valid atau tidak ditemukan.";
+        }
+    </script>
+</body>
+</html>
