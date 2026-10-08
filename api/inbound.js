@@ -21,8 +21,7 @@ export default async function handler(req, res) {
   if (!dbReady()) { console.error('SUPABASE belum diset'); return res.status(500).json({ ok: false }); }
 
   try {
-    const r = await resend(`/emails/${ev.data.email_id}/receiving`);
-
+    const r = await resend(`/emails/receiving/${ev.data.email_id}`);
     const m = await r.json();
     if (!r.ok) throw new Error(`Gagal ambil email: ${r.status} ${m.message || ''}`);
 
