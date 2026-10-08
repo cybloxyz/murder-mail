@@ -85,14 +85,6 @@ async function notifySolved(req, me, token) {
 <p>Tapi seseorang membaca arsipmu sampai habis. Aku tidak akan bilang siapa.</p>
 <p>Kasus berikutnya akan datang lewat surat. Jangan lupakan namaku.</p><p>Tacoz</p></div>`
   });
-  if (process.env.OWNER_EMAIL) {
-    await mail({
-      to: [process.env.OWNER_EMAIL],
-      subject: `[KASUS 1 SELESAI] ${me.n}`,
-      html: `<div style="${box}"><p>Pemain: <b>${esc(me.n)}</b> &lt;${esc(me.e)}&gt;</p>
-<p>Tautan Kasus #02 (kirim ke pemain ini):<br>https://${host}/case2.html?token=${token}</p></div>`
-    });
-  }
 }
 
 export default async function handler(req, res) {

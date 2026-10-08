@@ -6,13 +6,17 @@ const DAILY_LIMIT = 20;
 const resend = (path, init = {}) =>
   fetch('https://api.resend.com' + path, {
     ...init,
-    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }
+    headers: { 
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 
+      'Content-Type': 'application/json',
+      'User-Agent': 'my-app/1.0' 
+    }
   });
 
-// Webhook hanya memberi id; isi email diambil dari Resend, jadi tidak bisa dipalsukan.
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   const ev = req.body;
+  console.log('[inbound] webhook masuk:', ev?.type);
   if (ev?.type !== 'email.received' || !ev.data?.email_id) return res.status(200).json({ ignored: true });
   if (!dbReady()) { console.error('SUPABASE belum diset'); return res.status(500).json({ ok: false }); }
 
@@ -22,10 +26,11 @@ export default async function handler(req, res) {
     if (!r.ok) throw new Error(`Gagal ambil email: ${r.status} ${m.message || ''}`);
 
     const from = (String(m.from).match(/<([^>]+)>/)?.[1] || String(m.from)).trim().toLowerCase();
-    if (from.endsWith('@nfnaa.dev')) return res.status(200).json({ ignored: 'self' });
-    if (!(await getPlayer(from))) return res.status(200).json({ ignored: 'unregistered' });
-    if ((await recentInbound(from)) >= DAILY_LIMIT) return res.status(200).json({ ignored: 'limit' });
-    if (!(await claimInbound(ev.data.email_id, from))) return res.status(200).json({ ignored: 'duplicate' });
+    const skip = (why) => { console.log('[inbound] diabaikan:', why, from); return res.status(200).json({ ignored: why }); };
+    if (from.endsWith('@nfnaa.dev')) return skip('pengirim memakai domain sendiri');
+    if (!(await getPlayer(from))) return skip('email belum terdaftar di tabel players');
+    if ((await recentInbound(from)) >= DAILY_LIMIT) return skip('batas harian');
+    if (!(await claimInbound(ev.data.email_id, from))) return skip('webhook ganda');
 
     const body = String(m.text || '').split(/\n\s*(?:>|On .+wrote:|Pada .+menulis:)/)[0].slice(0, 500);
     const t = THREADS.find((x) => x.re.test(body));
@@ -45,6 +50,7 @@ export default async function handler(req, res) {
       })
     });
     if (!s.ok) console.error('Balasan gagal dikirim:', s.status, await s.text());
+    else console.log('[inbound] balasan terkirim ke', from, t ? `(berkas ${t.ev})` : '(tanpa berkas)');
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('inbound error:', err);
