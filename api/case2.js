@@ -1,4 +1,4 @@
-import { verifyToken, fileNo, evCode, esc } from './_lib.js';
+import { verifyToken, fileNo, esc } from './_lib.js'; 
 import { C2, EVIDENCE, SOLUTION } from './_case2.js';
 import { dbReady, upsertPlayer, getFiled, fileEv, getProgress, recordTry } from './_db.js';
 
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'file') {
-      const id = Object.keys(EVIDENCE).find((i) => evCode(me.e, i) === String(src.code || '').trim().toUpperCase());
+      const id = Object.keys(EVIDENCE).find((i) => i.toUpperCase() === String(src.code || '').trim().toUpperCase());
       if (!id) return res.status(200).json({ ok: true, message: 'Kode tidak valid.' });
       const have = await getFiled(me.e, 2);
       if (id === 'e8' && have.length < 4) return res.status(200).json({ ok: true, message: 'Surat terakhir masih tersegel. Kumpulkan 4 berkas lain dulu.' });
