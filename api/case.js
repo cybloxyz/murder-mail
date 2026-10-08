@@ -6,7 +6,7 @@ const CASE = {
   title: 'Pesta Ulang Tahun Terakhir Tacoz',
   tagline: 'Semoga panjang umur. (Ternyata tidak.)',
   intro: [
-    'Tacoz, pemilik Sunshine Party Co., merayakan ulang tahun ke-30 di Rumah Pelangi. Balon di mana-mana, musik riang, kue tiga tingkat. Semuanya sempurna, kecuali tuan rumahnya.',
+    'Tacoz, wanita pemilik Jewerly Co., merayakan ulang tahun ke-30 di Rumah Pelangi. Balon di mana-mana, musik riang, kue tiga tingkat. Semuanya sempurna, kecuali tuan rumahnya.',
     'Pukul 21:00 lampu dipadamkan untuk kejutan kue. Saat menyala lagi, Tacoz sudah tergeletak di Ruang Balon dengan topi pesta miring dan gelas emas kesayangannya kosong di tangan. Ia tidak sempat meniup lilin. Hemat korek.',
     'Polisi bilang ini keracunan. Kamu dipanggil karena polisi sedang makan kue. Kuenya enak, katanya.'
   ],
@@ -127,7 +127,7 @@ export default async function handler(req, res) {
     } catch (err) {
       console.error('case1 solve error:', err);
     }
-    return res.status(200).json({ ok: true, solved: true, title: 'KASUS DITUTUP', text: SOLUTION.epilog });
+    return res.status(200).json({ ok: true, solved: true, title: 'KASUS DITUTUP KAMU BERHASIL', text: SOLUTION.epilog });
   }
   if (culprit === SOLUTION.culprit) {
     return res.status(200).json({ ok: true, title: 'HAMPIR', text: 'Pelakunya benar, tapi motifmu meleset. Dengarkan lagi kesaksian dan pertanyaannya.' });
