@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     const s = await resend('/emails', {
       method: 'POST',
       body: JSON.stringify({
-        from: 'Bunda Lila <lila@nfnaa.dev>',
+        from: 'Bunda Lila <murdermail@nfnaa.dev>',
         to: [from],
         reply_to: process.env.INBOUND_ADDRESS,
         subject: 'Re: ' + String(m.subject || 'Surat').replace(/^(re:\s*)+/i, ''),
