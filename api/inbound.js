@@ -1,4 +1,4 @@
-import { evCode, esc } from './_lib.js';
+import { esc } from './_lib.js'; 
 import { THREADS, DEFAULT_MAIL } from './_case2.js';
 import { dbReady, getPlayer, claimInbound, recentInbound } from './_db.js';
 
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
     const body = String(m.text || '').split(/\n\s*(?:>|On .+wrote:|Pada .+menulis:)/)[0].slice(0, 500);
     const t = THREADS.find((x) => x.re.test(body));
-    const code = t ? evCode(from, t.ev) : null;
+    const code = t ? String(t.ev).toUpperCase() : null;
 
     const s = await resend('/emails', {
       method: 'POST',
