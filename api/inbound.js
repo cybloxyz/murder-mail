@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: 'Bunda Lila <murdermail@nfnaa.dev>',
         to: [from],
-        reply_to: process.env.INBOUND_ADDRESS,
+        reply_to: 'murdermail@nfnaa.dev',
         subject: 'Re: ' + String(m.subject || 'Surat').replace(/^(re:\s*)+/i, ''),
         html: `<div style="font-family:monospace;background:#f4eee1;color:#2c241d;padding:12px;border:2px solid #990000">
   <p>${esc(t ? t.mail : DEFAULT_MAIL)}</p>

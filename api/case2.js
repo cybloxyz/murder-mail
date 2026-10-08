@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'Bunda Lila <murdermail@nfnaa.dev>', to: [me.e], reply_to: 'Bunda Lila <murdermail@nfnaa.dev>', subject: 'Aku jatuh, Sayang',
+          from: 'Bunda Lila <murdermail@nfnaa.dev>', to: [me.e], reply_to: 'murdermail@nfnaa.dev', subject: 'Aku jatuh, Sayang',
           html: `<div style="font-family:monospace;background:#f4eee1;color:#2c241d;padding:12px;border:2px solid #990000">
 <p>Halo <b>${esc(me.n)}</b>,</p><p>Aku Bunda Lila. Kata mereka aku terpeleset. Aku tidak pernah terpeleset seumur hidupku.</p>
 <p><b>Balas surat ini</b> dengan satu pertanyaan spesifik, dan aku akan memberimu satu berkas. Bertanyalah dengan hati-hati. Orang mati tidak suka basa-basi.</p>
