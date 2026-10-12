@@ -25,28 +25,28 @@ export const C2 = {
 };
 
 export const EVIDENCE = {
-  e1: ['BUKU JAGA', 'Catatan Malam', 'Sari: shift 22:00 sampai 06:00, tanda tangan patroli jam 02:00 dan 04:00, kolom 03:00 kosong. Dr. Arman: pulang 20:00, kartu akses mencatat masuk 02:15 dan keluar 02:50. Pak Jaya: patroli taman 02:40.'],
-  e2: ['CANGKIR', 'Teh di Meja Lila', 'Sisa teh mengandung obat tidur dosis tinggi. Obat itu hanya ada di lemari obat; kuncinya dipegang Dr. Arman dan Sari.'],
-  e3: ['MEMO', 'Perintah CCTV', 'CCTV lantai 2 dimatikan 02:20 sampai 03:10 atas memo "perawatan rutin" bertanda tangan Ibu Rahma, bertanggal dua hari sebelum kejadian.'],
-  e4: ['FORENSIK', 'Jejak Tangga', 'Ada jejak sol karet putih beralur di anak tangga. Sepatu Dr. Arman berbahan kulit licin, Pak Jaya memakai bot hitam. Satu-satunya alas kaki beralur putih di panti adalah sandal klog perawat, yang berdecit saat dipakai berjalan.'],
-  e5: ['BUKU KAS', 'Aliran Donasi', 'Tiap bulan donasi dialihkan ke "Sunshine Party Co." berlabel "acara hiburan". Bunda Lila melingkarinya dan menulis: "T. tahu soal ini?" Persetujuan transfer ditandatangani Ibu Rahma. Dr. Arman hanya tercatat sebagai saksi tanda tangan.'],
-  e6: ['GAMBAR', 'Karya Eyang Bram', 'Gambar krayon: sosok putih membawa cangkir di tangga, dengan tulisan "cit cit cit". Eyang pikun soal hari, tapi tidak pernah salah soal bunyi.'],
-  e7: ['LOG KUNCI', 'Kunci Induk', 'Pak Jaya meminjam kunci induk 02:30 untuk pemanas dan mengembalikannya 02:50. CCTV taman memperlihatkan ia di luar gedung sepanjang waktu itu.'],
-  e8: ['SURAT', 'Pesan Terakhir', '"Kalau aku jatuh, aku tidak menjatuhkan diriku. Cari yang tersenyum paling lama saat aku diangkat. Dan tanyakan pada T. kenapa pestanya selalu butuh uangku."']
+  ex1Dj: ['BUKU JAGA', 'Catatan Malam', 'Sari: shift 22:00 sampai 06:00, tanda tangan patroli jam 02:00 dan 04:00, kolom 03:00 kosong. Dr. Arman: pulang 20:00, kartu akses mencatat masuk 02:15 dan keluar 02:50. Pak Jaya: patroli taman 02:40.'],
+  e2v4: ['CANGKIR', 'Teh di Meja Lila', 'Sisa teh mengandung obat tidur dosis tinggi. Obat itu hanya ada di lemari obat; kuncinya dipegang Dr. Arman dan Sari.'],
+  e3hY: ['MEMO', 'Perintah CCTV', 'CCTV lantai 2 dimatikan 02:20 sampai 03:10 atas memo "perawatan rutin" bertanda tangan Ibu Rahma, bertanggal dua hari sebelum kejadian.'],
+  e4zz: ['FORENSIK', 'Jejak Tangga', 'Ada jejak sol karet putih beralur di anak tangga. Sepatu Dr. Arman berbahan kulit licin, Pak Jaya memakai bot hitam. Satu-satunya alas kaki beralur putih di panti adalah sandal klog perawat, yang berdecit saat dipakai berjalan.'],
+  e5vr: ['BUKU KAS', 'Aliran Donasi', 'Tiap bulan donasi dialihkan ke "Sunshine Party Co." berlabel "acara hiburan". Bunda Lila melingkarinya dan menulis: "T. tahu soal ini?" Persetujuan transfer ditandatangani Ibu Rahma. Dr. Arman hanya tercatat sebagai saksi tanda tangan.'],
+  e6Tw: ['GAMBAR', 'Karya Eyang Bram', 'Gambar krayon: sosok putih membawa cangkir di tangga, dengan tulisan "cit cit cit". Eyang pikun soal hari, tapi tidak pernah salah soal bunyi.'],
+  ekX7: ['LOG KUNCI', 'Kunci Induk', 'Pak Jaya meminjam kunci induk 02:30 untuk pemanas dan mengembalikannya 02:50. CCTV taman memperlihatkan ia di luar gedung sepanjang waktu itu.'],
+  e8P: ['SURAT', 'Pesan Terakhir', '"Kalau aku jatuh, aku tidak menjatuhkan diriku. Cari yang tersenyum paling lama saat aku diangkat. Dan tanyakan pada T. kenapa pestanya selalu butuh uangku."']
 };
 
 // Satu surat balasan = satu berkas. Kata kunci harus spesifik.
 export const THREADS = [
-  { ev: 'e1', re: /jam|waktu|malam|jaga|shift|jadwal/i, mail: 'Waktu itu licin, Sayang. Aku jatuh jam tiga, tapi kata orang jam tiga itu jam tidur. Buku jaga tahu siapa yang tidak tidur.' },
-  { ev: 'e2', re: /teh|cangkir|minum|obat|pil/i, mail: 'Tehku manis sekali malam itu. Terlalu manis, seperti senyum seseorang.' },
-  { ev: 'e3', re: /cctv|kamera|rekam/i, mail: 'Kamera itu mata panti. Seseorang menyuruhnya tidur lebih dulu dariku. Perintahnya tertulis rapi.' },
-  { ev: 'e4', re: /tangga|sandal|sepatu|jejak|alas/i, mail: 'Tangga itu bernyanyi sebelum aku jatuh. Cit. Cit. Cit.' },
-  { ev: 'e5', re: /uang|kas|donasi|dana|transfer|keuangan/i, mail: 'Pesta itu mahal, Sayang. Aku melingkari satu nama di buku kas. Kamu pasti kenal pestanya.' },
-  { ev: 'e6', re: /eyang|bram|saksi|gambar|lihat/i, mail: 'Eyang Bram pikun soal hari, tapi tidak soal suara. Minta gambarnya.' },
-  { ev: 'e7', re: /kunci|jaya|tukang|taman/i, mail: 'Pak Jaya selalu punya kunci dan selalu punya alasan. Periksa keduanya.' },
-  { ev: 'e8', re: /surat|pesan|wasiat|terakhir/i, mail: 'Ada surat terakhirku. Tapi kumpulkan dulu empat berkas lain. Aku tidak suka dibaca terburu-buru.' }
+  { ev: 'ex1Dj', re: /jam|waktu|malam|jaga|shift|kronologi|jadwal/i, mail: 'Waktu itu licin, Sayang. Aku jatuh jam tiga, tapi kata orang jam tiga itu jam tidur. Buku jaga tahu siapa yang tidak tidur.' },
+  { ev: 'e2v4', re: /teh|cangkir|minum|obat|pil/i, mail: 'Tehku manis sekali malam itu. Terlalu manis, seperti senyum seseorang.' },
+  { ev: 'e3hY', re: /cctv|kamera|rekam/i, mail: 'Kamera itu mata panti. Seseorang menyuruhnya tidur lebih dulu dariku. Perintahnya tertulis rapi.' },
+  { ev: 'e4zz', re: /tangga|sandal|sepatu|jejak|alas/i, mail: 'Tangga itu bernyanyi sebelum aku jatuh. Cit. Cit. Cit.' },
+  { ev: 'e5vr', re: /uang|kas|donasi|dana|transfer|keuangan/i, mail: 'Pesta itu mahal, Sayang. Aku melingkari satu nama di buku kas. Kamu pasti kenal pestanya.' },
+  { ev: 'e6Tw', re: /eyang|bram|saksi|gambar|lihat/i, mail: 'Eyang Bram pikun soal hari, tapi tidak soal suara. Minta gambarnya.' },
+  { ev: 'ekX7', re: /kunci|jaya|tukang|taman/i, mail: 'Pak Jaya selalu punya kunci dan selalu punya alasan. Periksa keduanya.' },
+  { ev: 'e8P', re: /surat|pesan|wasiat|terakhir/i, mail: 'Ada surat terakhirku. Tapi kumpulkan dulu empat berkas lain. Aku tidak suka dibaca terburu-buru.' }
 ];
-export const DEFAULT_MAIL = 'Aku tidak mengerti. Pertanyaanmu terlalu bahagia. Tanyakan sesuatu yang bisa kubuktikan.';
+export const DEFAULT_MAIL = 'Aku tidak mengerti. Pertanyaanmu terlalu terburu-buru. Tanyakan sesuatu yang bisa dibuktikan.';
 
 export const SOLUTION = {
   culprit: 'sari', method: 'sedatif_tangga', sentence: 'saksi_kunci', minFiles: 4,
@@ -58,3 +58,4 @@ export const SOLUTION = {
   },
   epilog: 'Sari menolak bicara dan hanya berbisik: "Dia bilang ini pesta kejutan." Ibu Rahma menyewa pengacara, dan "Sunshine Party Co." tiba-tiba mengganti nomor teleponnya. Satu nama di buku kas masih tersegel: T. Kasus #03 menyusul.'
 };
+

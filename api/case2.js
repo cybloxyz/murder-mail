@@ -63,11 +63,40 @@ export default async function handler(req, res) {
       if (culprit !== S.culprit) return done('SALAH TANGKAP', S.cleared[culprit] || 'Tersangka tidak dikenal.');
       if (method !== S.method) return done('HAMPIR', 'Pelakunya benar, tapi caranya meleset. Baca lagi cangkir, tangga, dan jam yang kosong.');
       if (sentence !== S.sentence) return done('VONIS BELUM ADIL', 'Pelaku dan caranya benar. Tapi apakah ia bergerak sendirian? Periksa memo dan buku kas.');
+      try { await notifySolved(me); } catch (err) { console.error('notifySolved gagal:', err); }
       return done('BERKAS DITUTUP SEBAGIAN', S.epilog, { solved: true });
     }
     return res.status(400).json({ ok: false, message: 'Aksi tidak dikenal.' });
   } catch (err) {
     console.error('case2 error:', err);
     return res.status(500).json({ ok: false, message: 'Database bermasalah. Coba lagi sebentar.' });
+  }
+}
+
+async function mail(payload) {
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: 'Tacoz <murdermail@nfnaa.dev>', ...payload })
+  });
+  if (!r.ok) throw new Error(`Resend ${r.status}: ${await r.text()}`);
+}
+
+async function notifySolved(me) {
+  const box = 'font-family:monospace;background:#f4eee1;color:#2c241d;padding:12px;border:2px solid #990000';
+  await mail({
+    to: [me.e],
+    subject: '[CAUTION] Kasus #02 ditutup',
+    html: `<div style="${box}"><h2 style="color:#990000">[MASTER MEMORY]</h2>
+<p>Selamat, Detektif <b>${esc(me.n)}</b>. Sari dijatuhi hukuman, tapi ia bilang ia tidak sendiri.</p>
+<p>Arsipmu berpindah tangan, kali ini ke tangan seseorang yang mengenalmu sejak lama.</p>
+<p>Kasus berikutnya akan datang dan Bunda Lila belum tentu tenang di alam sana.</p><p>Tacoz</p></div>`
+  });
+  if (process.env.OWNER_EMAIL) {
+    await mail({
+      to: [process.env.OWNER_EMAIL],
+      subject: `[KASUS 2 SELESAI] ${me.n}`,
+      html: `<div style="${box}"><p>Pemain: <b>${esc(me.n)}</b> &lt;${esc(me.e)}&gt; menyelesaikan Kasus #02.</p></div>`
+    });
   }
 }
