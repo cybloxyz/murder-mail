@@ -88,6 +88,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, message: 'Aksi tidak dikenal.' });
   } catch (err) {
     console.error('case3 error:', err);
-    return res.status(500).json({ ok: false, message: 'Database bermasalah. Coba lagi sebentar.' });
+    return res.status(500).json({ ok: false, message: 'Database bermasalah: ' + String(err.message).slice(0, 200) });
   }
 }
