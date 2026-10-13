@@ -1,5 +1,5 @@
 import { verifyToken, fileNo, evCode, esc } from './_lib.js';
-import { C3, EVIDENCE, SOLUTION } from './case3.js';
+import { C3, EVIDENCE, SOLUTION } from './_case3.js';
 import { dbReady, upsertPlayer, getFiled, fileEv, getProgress, recordTry } from './_db.js';
 
 const N = 3, MAX = 3;

@@ -1,4 +1,4 @@
-import { verifyToken, fileNo, esc } from './_lib.js'; 
+import { verifyToken, fileNo, evCode, esc } from './_lib.js'; 
 import { C2, EVIDENCE, SOLUTION } from './_case2.js';
 import { dbReady, upsertPlayer, getFiled, fileEv, getProgress, recordTry } from './_db.js';
 

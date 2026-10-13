@@ -1,6 +1,6 @@
 import { evCode, esc } from './_lib.js';
 import { THREADS as T2, DEFAULT_MAIL as D2 } from './_case2.js';
-import { THREADS as T3, DEFAULT_MAIL as D3 } from './case3.js';
+import { THREADS as T3, DEFAULT_MAIL as D3 } from './_case3.js';
 import { dbReady, getPlayer, claimInbound, recentInbound } from './_db.js';
 
 const DAILY_LIMIT = 20;
