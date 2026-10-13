@@ -1,5 +1,5 @@
 import { signToken, fileNo, esc } from './_lib.js';
-import { dbReady, upsertPlayer } from './_db.js';
+import { dbReady, claimPlayer, releasePlayer } from './_db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -7,14 +7,24 @@ export default async function handler(req, res) {
   }
 
   const name = String(req.body?.name ?? '').trim().slice(0, 40);
-  const email = String(req.body?.email ?? '').trim().slice(0, 120);
+  const email = String(req.body?.email ?? '').trim().slice(0, 120).toLowerCase();
 
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ success: false, message: 'Nama dan alamat email wajib diisi dengan benar!' });
   }
   if (!process.env.RESEND_API_KEY || !process.env.TOKEN_SECRET || !dbReady()) {
-    console.error('RESEND_API_KEY atau TOKEN_SECRET belum diset');
+    console.error('RESEND_API_KEY, TOKEN_SECRET, atau SUPABASE belum diset');
     return res.status(500).json({ success: false, message: 'Server belum dikonfigurasi.' });
+  }
+
+  // Klaim atomik: hanya request pertama untuk email ini yang lolos, klik ganda atau daftar ulang berhenti di sini.
+  try {
+    if (!(await claimPlayer(email, name))) {
+      return res.status(409).json({ success: false, message: 'Email ini sudah terdaftar. Cek inbox dan folder spam untuk email dari murdermail@nfnaa.dev.' });
+    }
+  } catch (err) {
+    console.error('Supabase error:', err);
+    return res.status(500).json({ success: false, message: 'Database bermasalah. Coba lagi sebentar.' });
   }
 
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
@@ -27,13 +37,6 @@ export default async function handler(req, res) {
     console.log(`[PELACAKAN IP] Gagal melacak lokasi IP: ${ip}`);
   }
 
-  try {
-    await upsertPlayer(email, name);
-  } catch (err) {
-    console.error('Supabase error:', err);
-    return res.status(500).json({ success: false, message: 'Database bermasalah. Coba lagi sebentar.' });
-  }
-
   const token = signToken(name, email);
   const host = req.headers['x-forwarded-host'] || req.headers.host;
   const proto = req.headers['x-forwarded-proto'] || 'https';
@@ -44,7 +47,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'tacoz@nfnaa.dev',
+        from: 'murdermail@nfnaa.dev',
         to: [email],
         subject: '[CAUTION] Selamat ulang tahun, Tacoz',
         html: `
@@ -64,11 +67,13 @@ export default async function handler(req, res) {
     const result = await resp.json().catch(() => ({}));
     if (!resp.ok) {
       console.error('Resend menolak:', resp.status, result);
+      await releasePlayer(email).catch(() => {}); // email gagal terkirim: lepas klaim supaya pemain bisa mencoba lagi
       return res.status(502).json({ success: false, message: 'Email gagal dikirim: ' + (result.message || resp.status) });
     }
     return res.status(200).json({ success: true, message: 'Berkas berhasil dikirim!' });
   } catch (err) {
     console.error('Gagal mengirim email:', err);
+    await releasePlayer(email).catch(() => {});
     return res.status(500).json({ success: false, message: 'Gagal terhubung ke server email.' });
   }
 }
