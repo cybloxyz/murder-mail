@@ -48,11 +48,17 @@ export default async function handler(req, res) {
       const host = req.headers['x-forwarded-host'] || req.headers.host;
       const link = `https://${host}/case3.html?token=${src.token}`;
       try {
-        await mail({ to: [me.e], reply_to: process.env.INBOUND_ADDRESS, subject: '[KASUS 3] Aku hanya fotografer',
-          text: `halo ${esc(me.n)}, Aku Raga.\nAku hanya fotografer pernikahan, aku dituduh sebagai penyebab pernikahan ini berakhir begitu cepat, seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.\nBalas surat ini, aku yakin kamu butuh petunjuk.`,
-          attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/ande828eu82wqhsuhdb3.jpeg' }],
-          "berkas kasus":`${link}`
-          });
+await mail({ 
+  to: [me.e], 
+  reply_to: process.env.INBOUND_ADDRESS, 
+  subject: '[KASUS 3] Aku hanya fotografer',
+  html: `<p>halo ${esc(me.n)}, Aku Raga.</p>
+         <p>Aku hanya fotografer pernikahan, aku dituduh sebagai penyebab pernikahan ini berakhir begitu cepat, seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.</p>
+         <p>Silakan buka <a href="${link}"><b>Berkas Kasus Di Sini</b></a>.</p>
+         <p>Balas surat ini, aku yakin kamu butuh petunjuk.</p>`,
+  attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/ande828eu82wqhsuhdb3.jpeg' }]
+});
+
         return res.status(200).json({ ok: true, message: 'Surat dikirim ke emailmu.' });
       } catch (err) { console.error(err); return res.status(502).json({ ok: false, message: 'Surat gagal dikirim.' }); }
     }
