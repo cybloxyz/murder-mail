@@ -1,7 +1,7 @@
 import { evCode, esc } from './_lib.js';
 import { THREADS as T2, DEFAULT_MAIL as D2 } from './_case2.js';
 import { THREADS as T3, DEFAULT_MAIL as D3 } from './_case3.js';
-import { dbReady, getPlayer, claimInbound, recentInbound } from './_db.js';
+import { dbReady, getPlayer, claimInbound, recentInbound, releaseInbound } from './_db.js';
 
 const DAILY_LIMIT = 20;
 const CASES = [
@@ -51,8 +51,9 @@ export default async function handler(req, res) {
     if (!s.ok) console.error('Balasan gagal dikirim:', s.status, await s.text());
     else console.log('[inbound] balasan terkirim ke', from, `(${c.name}${t ? ', berkas ' + t.ev : ''})`);
     return res.status(200).json({ ok: true });
-  } catch (err) {
+  }   catch (err) {
     console.error('inbound error:', err);
+    await releaseInbound(ev.data.email_id).catch(() => {});
     return res.status(500).json({ ok: false });
   }
 }

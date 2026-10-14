@@ -11,6 +11,9 @@ export function signToken(name, email) {
   return `${p}.${mac(p)}`;
 }
 
+// Kode berkas yang dikirim lewat email. Harus cocok dengan pencocokan di aksi 'file' (case2.js).
+export const evCode = (email, evId) => evId;
+
 export function verifyToken(token) {
   try {
     const [p, s] = String(token).split('.');

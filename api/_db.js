@@ -51,3 +51,6 @@ export const recentInbound = async (email, hours = 24) =>
 
 export const listSolved = async (c) =>
   (await q(`progress?case_no=eq.${c}&solved=eq.true&select=email,players(name)`)).map((r) => ({ email: r.email, name: r.players?.name || r.email }));
+
+export const releaseInbound = (id) =>
+  q(`inbound_log?email_id=eq.${e(id)}`, { method: 'DELETE' });
