@@ -1,6 +1,7 @@
 import { verifyToken, fileNo, evCode, esc } from './_lib.js';
 import { C3, EVIDENCE, SOLUTION } from './_case3.js';
 import { dbReady, upsertPlayer, getFiled, fileEv, getProgress, recordTry } from './_db.js';
+import { text } from 'express';
 
 const N = 3, MAX = 3;
 const box = 'font-family:monospace;background:#f4eee1;color:#2c241d;padding:12px;border:2px solid #990000';
@@ -49,10 +50,9 @@ export default async function handler(req, res) {
       const link = `https://${host}/case3.html?token=${src.token}`;
       try {
         await mail({ to: [me.e], reply_to: process.env.INBOUND_ADDRESS, subject: '[KASUS 3] Aku hanya fotografer',
+          text: `halo ${esc(me.n)}, Aku Raga.\nAku hanya fotografer pernikahan, aku dituduh sebagai penyebab pernikahan ini berakhir begitu cepat, seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.\nBalas surat ini, aku yakin kamu butuh petunjuk.`,
           attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/ande828eu82wqhsuhdb3.jpeg' }],
-          html: `<div style="${box}"><p>Halo <b>${esc(me.n)}</b>,</p><p>Aku Raga. Aku hanya fotografer pernikahan.</p>
-<p><b>Balas surat ini, aku yakin kamu butuh petunjuk</b> seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.</p>
-<p><a href="${link}" style="color:#990000">Buka berkas kasus</a></p></div>` });
+          });
         return res.status(200).json({ ok: true, message: 'Surat dikirim ke emailmu.' });
       } catch (err) { console.error(err); return res.status(502).json({ ok: false, message: 'Surat gagal dikirim.' }); }
     }
