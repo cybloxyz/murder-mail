@@ -5,7 +5,7 @@ import { dbReady, getPlayer, claimInbound, recentInbound, releaseInbound } from 
 
 const DAILY_LIMIT = 20;
 const CASES = [
-  { match: /\[KASUS 3\]/i, name: 'Ibu Rahma', addr: 'rahma', threads: T3, def: D3, sig: 'Ibu Rahma // Gedung Pelangi' },
+  { match: /\[KASUS 3\]/i, name: 'Raga', addr: 'raga', threads: T3, def: D3, sig: 'Ibu Rahma // Gedung Pelangi' },
   { match: /./, name: 'Bunda Lila', addr: 'lila', threads: T2, def: D2, sig: 'Bunda Lila // Panti Senja Ceria' }
 ];
 const resend = (path, init = {}) =>

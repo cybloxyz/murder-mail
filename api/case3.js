@@ -51,6 +51,7 @@ export default async function handler(req, res) {
         await mail({ to: [me.e], reply_to: process.env.INBOUND_ADDRESS, subject: '[KASUS 3] Aku hanya fotografer',
           text: `halo ${esc(me.n)}, Aku Raga.\nAku hanya fotografer pernikahan, aku dituduh sebagai penyebab pernikahan ini berakhir begitu cepat, seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.\nBalas surat ini, aku yakin kamu butuh petunjuk.`,
           attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/ande828eu82wqhsuhdb3.jpeg' }],
+          "berkas kasus":`${link}`
           });
         return res.status(200).json({ ok: true, message: 'Surat dikirim ke emailmu.' });
       } catch (err) { console.error(err); return res.status(502).json({ ok: false, message: 'Surat gagal dikirim.' }); }
