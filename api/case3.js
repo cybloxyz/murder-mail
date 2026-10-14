@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       const link = `https://${host}/case3.html?token=${src.token}`;
       try {
         await mail({ to: [me.e], reply_to: process.env.INBOUND_ADDRESS, subject: '[KASUS 3] Aku hanya fotografer',
-          attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/public/files/ande828eu82wqhsuhdb3.jpeg' }],
+          attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/ande828eu82wqhsuhdb3.jpeg' }],
           html: `<div style="${box}"><p>Halo <b>${esc(me.n)}</b>,</p><p>Aku Raga. Aku hanya fotografer pernikahan.</p>
 <p><b>Balas surat ini, aku yakin kamu butuh petunjuk</b> seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.</p>
 <p><a href="${link}" style="color:#990000">Buka berkas kasus</a></p></div>` });
