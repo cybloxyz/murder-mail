@@ -4,7 +4,6 @@ import { THREADS as T3, DEFAULT_MAIL as D3 } from './_case3.js';
 import { dbReady, getPlayer, claimInbound, recentInbound } from './_db.js';
 
 const DAILY_LIMIT = 20;
-// Kasus ditentukan dari subjek balasan: "[KASUS 3]" = Kasus #03, selain itu Kasus #02.
 const CASES = [
   { match: /\[KASUS 3\]/i, name: 'Ibu Rahma', addr: 'rahma', threads: T3, def: D3, sig: 'Ibu Rahma // Gedung Pelangi' },
   { match: /./, name: 'Bunda Lila', addr: 'lila', threads: T2, def: D2, sig: 'Bunda Lila // Panti Senja Ceria' }

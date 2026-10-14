@@ -35,7 +35,6 @@ export const EVIDENCE = {
   f8: ['SURAT', 'Tulisan di Undangan', '"Jika aku tidak sempat memotong kue, tanyakan pada C. kenapa ia begitu ingin tanda tanganku jam sembilan. Aku berniat membatalkan hibah itu."']
 };
 
-// Satu surat balasan = satu berkas. Urutan penting: yang spesifik di atas.
 export const THREADS = [
   { ev: 'f3', re: /tuas|darurat|obeng|pelepas/i, mail: 'Tuas kecil itu tidak pernah kuperhatikan, sampai aku butuh. Cari siapa yang membawa obeng ke pesta.' },
   { ev: 'f2', re: /kunci|kode|gembok|lock|elektronik/i, mail: 'Pintu itu modern sekali, Sayang. Bisa dikunci tanpa ada yang menyentuhnya. Lihat lognya.' },

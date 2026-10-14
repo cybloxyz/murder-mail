@@ -1,4 +1,4 @@
-import { verifyToken, fileNo, evCode, esc } from './_lib.js'; 
+import { verifyToken, fileNo, esc } from './_lib.js'; 
 import { C2, EVIDENCE, SOLUTION } from './_case2.js';
 import { dbReady, upsertPlayer, getFiled, fileEv, getProgress, recordTry } from './_db.js';
 
@@ -92,11 +92,4 @@ async function notifySolved(me) {
 <p>Arsipmu berpindah tangan, kali ini ke tangan seseorang yang mengenalmu sejak lama.</p>
 <p>Kasus berikutnya akan datang dan Bunda Lila belum tentu tenang di alam sana.</p><p>Tacoz</p></div>`
   });
-  if (process.env.OWNER_EMAIL) {
-    await mail({
-      to: [process.env.OWNER_EMAIL],
-      subject: `[KASUS 2 SELESAI] ${me.n}`,
-      html: `<div style="${box}"><p>Pemain: <b>${esc(me.n)}</b> &lt;${esc(me.e)}&gt; menyelesaikan Kasus #02.</p></div>`
-    });
-  }
 }
