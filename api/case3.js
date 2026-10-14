@@ -64,7 +64,8 @@ await mail({
     }
 
     if (action === 'file') {
-      const id = Object.keys(EVIDENCE).find((i) => evCode(me.e, i) === String(src.code || '').trim().toUpperCase());
+      const want = String(src.code || '').trim().toUpperCase();
+      const id = Object.keys(EVIDENCE).find((i) => String(evCode(me.e, i)).toUpperCase() === want);
       if (!id) return res.status(200).json({ ok: true, message: 'Kode tidak valid.' });
       const have = await getFiled(me.e, N);
       if (id === 'f8' && have.length < 4) return res.status(200).json({ ok: true, message: 'Surat ini masih tersegel. Kumpulkan 4 berkas lain dulu.' });
