@@ -10,7 +10,7 @@ async function mail(payload) {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: 'Ibu Rahma <rahma@nfnaa.dev>', ...payload })
+    body: JSON.stringify({ from: 'Raga <raga@nfnaa.dev>', ...payload })
   });
   if (!r.ok) throw new Error(`Resend ${r.status}: ${await r.text()}`);
 }
