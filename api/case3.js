@@ -1,7 +1,6 @@
 import { verifyToken, fileNo, evCode, esc } from './_lib.js';
 import { C3, EVIDENCE, SOLUTION } from './_case3.js';
 import { dbReady, upsertPlayer, getFiled, fileEv, getProgress, recordTry } from './_db.js';
-import { text } from 'express';
 
 const N = 3, MAX = 3;
 const box = 'font-family:monospace;background:#f4eee1;color:#2c241d;padding:12px;border:2px solid #990000';
