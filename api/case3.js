@@ -78,7 +78,7 @@ await mail({
       const [ids, prog] = await Promise.all([getFiled(me.e, N), getProgress(me.e, N)]);
       if (prog.solved) return res.status(200).json({ ok: true, title: 'SUDAH DITUTUP', text: S.epilog });
       if (prog.tries >= MAX) return res.status(200).json({ ok: true, title: 'KESEMPATAN HABIS', text: 'Tiga vonis sudah terpakai.' });
-      if (ids.length < S.minFiles) return res.status(200).json({ ok: true, title: 'BERKAS KURANG', text: `Kamu baru punya ${ids.length} berkas. Minimal ${S.minFiles}. Balas surat Ibu Rahma.` });
+      if (ids.length < S.minFiles) return res.status(200).json({ ok: true, title: 'BERKAS KURANG', text: `Kamu baru punya ${ids.length} berkas. Minimal ${S.minFiles}. Balas surat Raga.` });
       const { culprit, method, motive } = src;
       const solved = culprit === S.culprit && method === S.method && motive === S.motive;
       await recordTry(me.e, N, solved);
