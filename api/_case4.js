@@ -1,8 +1,8 @@
 export const C4 = {
-  title: 'Titip Salam ',
-  tagline: 'Sampaikan Salamku.',
+  title: 'Aku hanya seorang fotografer',
+  tagline: 'aku masih hidup tolong bantu aku.',
   intro: [
-    '.',
+    '',
     'Jam 18:49 Ibu Rahma masuk ke ruang pendingin untuk menyetujui kue. Jam 20:05 ia ditemukan di dalamnya, masih anggun, hanya sedikit lebih dingin dari biasanya. Pintunya terkunci dari luar.',
     'Tamu bilang ini kecelakaan. Katering bilang kuenya masih aman dimakan. Kamu bilang kamu butuh surat dari yang bersangkutan. Balas suratnya, tanyakan hal yang spesifik, dan kumpulkan berkasnya di sini.'
   ],

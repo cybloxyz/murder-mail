@@ -22,12 +22,8 @@ async function notifySolved(me) {
     html: `<div style="${box}"><h2 style="color:#990000">[MASTER MEMORY]</h2>
 <p>Selamat, Detektif <b>${esc(me.n)}</b>. Tuan C. terbukti konsisten sampai akhir.</p>
 <p>Tapi Alea menghilang bersama buku jadwalnya, dan seseorang masih menggaji semua orang ini.</p>
-<p>Kasus berikutnya menunggu. Aku masih sedikit kedinginan.</p><p>Rahma</p></div>`
+<p>Raga menghilang setelah kasus ini kamu selesaikan.</p></div>`
   });
-  if (process.env.OWNER_EMAIL) {
-    await mail({ to: [process.env.OWNER_EMAIL], subject: `[KASUS 3 SELESAI] ${me.n}`,
-      html: `<div style="${box}"><p>Pemain: <b>${esc(me.n)}</b> &lt;${esc(me.e)}&gt; menyelesaikan Kasus #03.</p></div>` });
-  }
 }
 
 export default async function handler(req, res) {
@@ -52,9 +48,10 @@ export default async function handler(req, res) {
       const host = req.headers['x-forwarded-host'] || req.headers.host;
       const link = `https://${host}/case3.html?token=${src.token}`;
       try {
-        await mail({ to: [me.e], reply_to: process.env.INBOUND_ADDRESS, subject: '[KASUS 3] Undangan terakhir',
-          html: `<div style="${box}"><p>Halo <b>${esc(me.n)}</b>,</p><p>Aku Rahma. Tamu mengira aku kedinginan karena gugup. Aku tidak pernah gugup seumur hidupku.</p>
-<p><b>Balas surat ini</b> dengan satu pertanyaan spesifik, dan aku memberimu satu berkas. Jangan ubah subjek surat ini.</p>
+        await mail({ to: [me.e], reply_to: process.env.INBOUND_ADDRESS, subject: '[KASUS 3] Aku hanya fotografer',
+          attachments: [{ filename: 'ande828eu82wqhsuhdb3.jpeg', path: 'https://murdermail.nfnaa.dev/files/public/files/ande828eu82wqhsuhdb3.jpeg' }],
+          html: `<div style="${box}"><p>Halo <b>${esc(me.n)}</b>,</p><p>Aku Raga. Aku hanya fotografer pernikahan.</p>
+<p><b>Balas surat ini, aku yakin kamu butuh petunjuk</b> seluruh foto di kameraku hilang, aku kirimkan satu satunya foto yang tersisa di kameraku.</p>
 <p><a href="${link}" style="color:#990000">Buka berkas kasus</a></p></div>` });
         return res.status(200).json({ ok: true, message: 'Surat dikirim ke emailmu.' });
       } catch (err) { console.error(err); return res.status(502).json({ ok: false, message: 'Surat gagal dikirim.' }); }
